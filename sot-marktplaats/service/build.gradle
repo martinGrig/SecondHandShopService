@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+
+    implementation group: 'org.glassfish.jersey.bundles', name: 'jaxrs-ri', version: '2.33'
+    implementation group: 'org.glassfish.jersey.containers', name: 'jersey-container-servlet', version: '2.33'
+
+    // https://mvnrepository.com/artifact/org.glassfish.jersey.containers/jersey-container-jdk-http
+    implementation group: 'org.glassfish.jersey.containers', name: 'jersey-container-jdk-http', version: '2.33'
+    implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+    // https://mvnrepository.com/artifact/org.glassfish.jersey.containers/jersey-container-grizzly2-http
+    implementation group: 'org.glassfish.jersey.containers', name: 'jersey-container-grizzly2-http', version: '2.33'
+}
+
+test {
+    useJUnitPlatform()
+}
