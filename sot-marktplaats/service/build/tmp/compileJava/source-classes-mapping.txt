@@ -8,14 +8,14 @@ Product.java
  Product
 MockDataStore.java
  MockDataStore
-AuthenticationFilter.java
- AuthenticationFilter
-Publisher.java
- Publisher
 ProductResources.java
  ProductResources
  ProductResources$1
  ProductResources$2
  ProductResources$3
+Publisher.java
+ Publisher
+AuthenticationFilter.java
+ AuthenticationFilter
 CustomApplicationConfig.java
  CustomApplicationConfig

@@ -78,11 +78,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             // get allowed roles for this method
             RolesAllowed rolesAnnotation = method.getAnnotation(RolesAllowed.class);
             Set<String> rolesSet = new HashSet<String>(Arrays.asList(rolesAnnotation.value()));
-
-            /* isUserAllowed : implement this method to check if this user has any of
-                       the roles in the rolesSet
-            if not isUserAllowed abort the requestContext with FORBIDDEN response*/
-            if (!isUserAllowed(username, password, rolesSet)) {
+            if (!isUserAllowed(username, password)) {
                 Response response = Response.status(Response.Status.FORBIDDEN).build();
                 requestContext.abortWith(response);
                 return;
@@ -90,15 +86,9 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         }
     }
 
-    private boolean isUserAllowed(String username, String password, Set<String> rolesSet) {
-//        if(username != null && password != null && rolesSet.contains("ADMIN")){
-//            return true;
-//        }
-//        else{
-//            return false;
-//        }
+    private boolean isUserAllowed(String username, String password) {
         for(User user : store.getAll()){
-            if(username.equals(user.getUsername()) && password.equals(user.getPassword()) && rolesSet.contains("ADMIN")){
+            if(username.equals(user.getUsername()) && password.equals(user.getPassword()) && user.getRole().equals("ADMIN")){
                 return true;
             }
         }
@@ -112,11 +102,5 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             }
         }
         return false;
-//        if(username != null && password != null){
-//            return true;
-//        }
-//        else{
-//            return false;
-//        }
     }
 }

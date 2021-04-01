@@ -130,7 +130,7 @@ public class Client {
             System.out.println("The resource responce is: " + entity);
         }
         else{
-            System.err.println("ERROR: Cannot get one student with parameter! " + responsePath);
+            System.err.println("ERROR: Cannot get one product with parameter! " + responsePath);
             String entity = responsePath.readEntity(String.class);
             System.err.println(entity);
         }
@@ -171,7 +171,7 @@ public class Client {
         Response response = serviceTarget.request().accept(MediaType.TEXT_PLAIN).post(entity);
         if(response.getStatus() == Response.Status.CREATED.getStatusCode()){
             String productURL = response.getHeaderString("Location");
-            System.out.println(("POST student is created and it can be accessed at " + productURL));
+            System.out.println(("POST product is created and it can be accessed at " + productURL));
         }
         else{
             System.err.println(response);
@@ -208,7 +208,7 @@ public class Client {
             }
         }
         else{
-            System.err.println("ERROR: Cannot get one student with parameter! " + response);
+            System.err.println("ERROR: Cannot get product with parameter! " + response);
             String entity = response.readEntity(String.class);
             System.err.println(entity);
         }
