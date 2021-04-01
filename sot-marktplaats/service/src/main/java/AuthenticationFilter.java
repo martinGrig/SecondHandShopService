@@ -20,20 +20,12 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     @Context
     private ResourceInfo resourceInfo;
     private UserStore store;
+    public AuthenticationFilter(){
+        store = UserStore.singleton();
+    }
 
-
-    // requestContext contains information about the HTTP request message
     @Override
     public void filter(ContainerRequestContext requestContext) {
-        // here you will perform AUTHENTICATION and AUTHORIZATION
-        /* if you want to abort this HTTP request, you do this:
-
-      Response response = Response.status(Response.Status.UNAUTHORIZED).build();
-      requestContext.abortWith(response);
-
-        */
-
-
         final String AUTHORIZATION_PROPERTY = "Authorization";
         final String AUTHENTICATION_SCHEME = "Basic";
         //Get request headers
@@ -99,26 +91,32 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     }
 
     private boolean isUserAllowed(String username, String password, Set<String> rolesSet) {
-        if(username != null && password != null && rolesSet.contains("ADMIN")){
-            return true;
-        }
-        else{
-            return false;
-        }
-//        for(User user : store.getAll()){
-//            if(username.equals(user.getUsername()) && password.equals(user.getPassword()) && rolesSet.contains("ADMIN")){
-//                return true;
-//            }
+//        if(username != null && password != null && rolesSet.contains("ADMIN")){
+//            return true;
 //        }
-//        return false;
+//        else{
+//            return false;
+//        }
+        for(User user : store.getAll()){
+            if(username.equals(user.getUsername()) && password.equals(user.getPassword()) && rolesSet.contains("ADMIN")){
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isValidUser(String username, String password) {
-        if(username != null && password != null){
-            return true;
+        for (User user : store.getAll()){
+            if(username.equals(user.getUsername()) && password.equals(user.getPassword())){
+                return true;
+            }
         }
-        else{
-            return false;
-        }
+        return false;
+//        if(username != null && password != null){
+//            return true;
+//        }
+//        else{
+//            return false;
+//        }
     }
 }

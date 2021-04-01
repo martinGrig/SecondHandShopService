@@ -34,7 +34,7 @@ public class ProductResources {
         return Response.ok(entity).build();
     }
     @GET //asd
-//    @DenyAll
+    @RolesAllowed({"ADMIN"})
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProductWithID(@PathParam("id") int id){

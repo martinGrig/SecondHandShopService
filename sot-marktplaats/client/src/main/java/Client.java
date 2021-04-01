@@ -33,7 +33,10 @@ public class Client {
         return new File(url.toURI());
     }
     public Client(String username, String password, Set<String> roles){
-        roles.add("ADMIN");
+
+        System.out.println(String.format("You are logged in as %s", username));
+
+        System.out.println((String.format("%s", roles)));
         try{
             File keyStore = getFile("keystore_client");
             File trustStore = getFile("truststore_client");
@@ -56,6 +59,32 @@ public class Client {
             URI baseURI = UriBuilder.fromUri("https://localhost:9090/store/products").build();
             serviceTarget = client.target(baseURI);
         }catch(URISyntaxException ex){
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    public Client() {
+        try {
+            File keyStore = getFile("keystore_client");
+            File trustStore = getFile("truststore_client");
+
+            System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
+
+            SslConfigurator sslConfig = SslConfigurator.newInstance()
+                    .keyStoreFile(keyStore.getAbsolutePath())
+                    .keyStorePassword("asdfgh")
+                    .trustStoreFile(trustStore.getAbsolutePath())
+                    .trustStorePassword("asdfgh")
+                    .keyPassword("asdfgh");
+
+            final SSLContext sslContext = sslConfig.createSSLContext();
+
+            ClientConfig config = new ClientConfig();
+            config.register(HttpAuthenticationFeature.basic("admin", "admin"));
+            javax.ws.rs.client.Client client = ClientBuilder.newBuilder().withConfig(config)
+                    .sslContext(sslContext).build();
+            URI baseURI = UriBuilder.fromUri("https://localhost:9090/store/").build();
+            serviceTarget = client.target(baseURI);
+        } catch (URISyntaxException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -185,7 +214,65 @@ public class Client {
         }
     }
 
+    public static void showInitialMenu(){
+        System.out.println("1: Login");
+        System.out.println("2: Register a new user");
+    }
+    public static Client login(Scanner input){
+        String username;
+        String password;
+        Set<String> roles = new HashSet<>();
+        String answer;
 
+        System.out.println("Log in:");
+        System.out.println("username: ");
+        username = input.next();
+
+        System.out.println("password: ");
+        password = input.next();
+        Client client = null;
+        if(username != null && password != null) {
+            System.out.println(String.format("You are logged in as %s", username));
+            client = new Client(username, password, roles);
+            return client;
+        }
+        return client;
+    }
+    public void register(Scanner input){
+        String username;
+        String password;
+        Set<String> roles = new HashSet<>();
+        String answer;
+
+        System.out.println("Register:");
+        System.out.println("username: ");
+        username = input.next();
+
+        System.out.println("password: ");
+        password = input.next();
+
+        System.out.println("Do you want to be a seller: ");
+        answer = input.next();
+        String pattern = "^Yes|y|yes|YES|Y";
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(answer);
+        if (m.find( )) {
+            roles.add("SELLER");
+        }
+        Form form = new Form();
+        form.param("username", String.format("%s", username));
+        form.param("password", String.format("%s", password));
+        form.param("role", String.format("%s", roles));
+        Entity<Form> entity = Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED);
+        Response response = serviceTarget.request().accept(MediaType.TEXT_PLAIN).post(entity);
+        if(response.getStatus() == Response.Status.CREATED.getStatusCode()){
+            String productURL = response.getHeaderString("Location");
+            System.out.println((String.format("User %s is created and it can be accessed at ", username) + productURL));
+        }
+        else{
+            System.err.println(response);
+        }
+    }
     public void showMenu(){
         System.out.println("0: Exit the program");
         System.out.println("1: Show all products");
@@ -195,7 +282,6 @@ public class Client {
         System.out.println("5: Post a new product for sale");
         System.out.println("6: Update the name of a product. First type the id of the product you want to update, press enter and type the new name.");
         System.out.println("7: Buy product with id");
-        System.out.println("8: Show all products");
     }
     public void showItemMenu(int id){
         System.out.println("What would you like to do with this item");
@@ -204,8 +290,6 @@ public class Client {
         System.out.println("2: Update");
         System.out.println("2: Buy");
     }
-
-
     public void useMenu(Client client, Scanner input){
         int option;
         int id;
@@ -215,8 +299,6 @@ public class Client {
         option = input.nextInt();
         while(option != 0){
             switch(option){
-                case 0:
-                    break;
                 case 1:
                     client.getAllProducts();
                     client.showMenu();
@@ -259,6 +341,8 @@ public class Client {
                     client.showMenu();
                     option = input.nextInt();
                     break;
+                default:
+                    break;
             }
         }
     }
@@ -267,34 +351,22 @@ public class Client {
 
     public static void main(String[] args){
         Scanner input = new Scanner(System.in);
-
-
-        String username;
-        String password;
-        Set<String> roles = new HashSet<>();
-        String answer;
-
-        System.out.println("Log in:");
-        System.out.println("username: ");
-        username = input.next();
-
-        System.out.println("password: ");
-        password = input.next();
-
-        System.out.println("Do you want to be an admin: ");
-        answer = input.next();
-        String pattern = "^Yes|y|yes|YES|Y";
-        Pattern r = Pattern.compile(pattern);
-        Matcher m = r.matcher(answer);
-        if (m.find( )) {
-            roles.add("ADMIN");
-        }
-
-        if(username != null && password != null) {
-            System.out.println("You are logged in");
-            Client client = new Client(username, password, roles);
-            client.useMenu(client, input);
-
+        showInitialMenu();
+        int option;
+        option = input.nextInt();
+        while(option != 0)
+        switch(option){
+            case 1:
+                Client client = login(input);
+                client.useMenu(client, input);
+                break;
+            case 2:
+                Client emptyClient = new Client();
+                emptyClient.register(input);
+                showInitialMenu();
+                option = input.nextInt();
+            default:
+                break;
         }
 
     }
