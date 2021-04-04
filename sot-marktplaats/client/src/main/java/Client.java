@@ -130,7 +130,7 @@ public class Client {
             System.out.println("The resource responce is: " + entity);
         }
         else{
-            System.err.println("ERROR: Cannot get one product with parameter! " + responsePath);
+            System.err.println("ERROR: Cannot get one product with parameter! Only admin user is allowed to use this action" + responsePath);
             String entity = responsePath.readEntity(String.class);
             System.err.println(entity);
         }
@@ -274,6 +274,8 @@ public class Client {
         }
     }
     public void showMenu(){
+        System.out.println("Write the number of the action you need and press enter. \n" +
+                "Some actions may need additional parameters after you press enter.");
         System.out.println("0: Exit the program");
         System.out.println("1: Show all products");
         System.out.println("2: Select a product(type its name)");

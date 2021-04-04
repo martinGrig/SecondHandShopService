@@ -102,7 +102,7 @@ public class ProductResources {
     }
 
     private int generateProductId() {
-        return store.getAll().size() + 1;
+        return store.getAll().size() + 100;
     }
 
     @PUT
